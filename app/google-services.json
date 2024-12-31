@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "91418917251",
+    "project_id": "shake-it-76755",
+    "storage_bucket": "shake-it-76755.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:91418917251:android:7eff2eddce64b254c51eb6",
+        "android_client_info": {
+          "package_name": "com.example.shakeit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOvSNbP1wIEo2z7ifTjxJAp2kC7TRetKk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
