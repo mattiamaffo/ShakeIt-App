@@ -5,10 +5,11 @@ import com.example.shakeit.R
 import com.example.shakeit.ui.elements.MinigameData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 class AuthRepository {
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     fun registerUser(
@@ -300,8 +301,12 @@ class AuthRepository {
             .whereEqualTo("username", username)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                if (!querySnapshot.isEmpty) {
-                    onResult(querySnapshot.documents[0].data)
+                // Usa la proprietà 'documents' per verificare se ci sono risultati
+                if (querySnapshot.documents.isNotEmpty()) {
+                    val document = querySnapshot.documents[0]
+                    val data = document.data?.toMutableMap() ?: mutableMapOf()
+                    data["documentId"] = document.id // Aggiungi l'ID del documento ai dati
+                    onResult(data)
                 } else {
                     onResult(null)
                 }
@@ -323,7 +328,7 @@ class AuthRepository {
                 if (task.isSuccessful) {
                     val userId = auth.currentUser?.uid ?: return@addOnCompleteListener
 
-                    // Save user dat
+                    // Save user data
                     val userData = mapOf(
                         "username" to username,
                         "phoneNumber" to phoneNumber,
@@ -333,7 +338,8 @@ class AuthRepository {
                     firestore.collection("users").document(userId)
                         .set(userData)
                         .addOnSuccessListener {
-                            onSuccess()
+                            // Initialize friends list
+                            initializeUserFriends(userId, onSuccess, onFailure)
                         }
                         .addOnFailureListener { e ->
                             onFailure("Error saving user data: ${e.message}")
@@ -343,4 +349,45 @@ class AuthRepository {
                 }
             }
     }
+
+    private fun initializeUserFriends(userId: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        val initialFriendsData = mapOf(
+            "friendsList" to emptyList<String>()
+        )
+        firestore.collection("friends").document(userId)
+            .set(initialFriendsData)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { e ->
+                onFailure("Error initializing friends: ${e.message}")
+            }
+    }
+
+    fun addFriend(userId: String, friendId: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        val friendDocRef = firestore.collection("friends").document(userId)
+        friendDocRef.update("friendsList", FieldValue.arrayUnion(friendId))
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { onFailure(it.message ?: "Unknown error") }
+    }
+
+    fun addMutualFriend(userId: String, friendId: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        addFriend(userId, friendId, onSuccess = {
+            addFriend(friendId, userId, onSuccess, onFailure)
+        }, onFailure)
+    }
+
+
+
+    fun getFriends(userId: String, onSuccess: (List<String>) -> Unit, onFailure: (String) -> Unit) {
+        val friendDocRef = firestore.collection("friends").document(userId)
+        friendDocRef.get()
+            .addOnSuccessListener { document ->
+                val friendsList = document.get("friendsList") as? List<String> ?: emptyList()
+                onSuccess(friendsList)
+            }
+            .addOnFailureListener { onFailure(it.message ?: "Unknown error") }
+    }
+
+
 }
