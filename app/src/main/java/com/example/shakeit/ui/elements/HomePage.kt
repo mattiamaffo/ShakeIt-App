@@ -219,7 +219,7 @@ fun HomePage(navController: NavController, authRepository: AuthRepository) {
                     Pair(R.drawable.back_vector, "back"),
                     Pair(R.drawable.chart_icon, "leaderboard"),
                     Pair(R.drawable.home_icon, "home"),
-                    Pair(R.drawable.chat_icon, "chat")
+                    Pair(R.drawable.chat_icon, "friends_list")
                 ),
                 currentScreen = currentScreen,
                 onIconClick = { screenName ->

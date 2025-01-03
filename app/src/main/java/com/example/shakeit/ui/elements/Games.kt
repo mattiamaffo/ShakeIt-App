@@ -26,10 +26,10 @@ import com.example.shakeit.ui.theme.Pontiac
 fun Games(navController: NavController) {
     // Lista dei giochi
     val games = listOf(
-        Triple("Game 1", "Description goes here, write anything you want.", R.drawable.card_game),
-        Triple("Game 2", "Another description for the second game.", R.drawable.card_game),
-        Triple("Game 3", "The third game's description goes here.", R.drawable.card_game),
-        Triple("Game 4", "Final game's description.", R.drawable.card_game)
+        Triple("Memory Rush", "A memory game where players replicate a sequence of colors or images that gets progressively harder.", R.drawable.memory_rush),
+        Triple("Shake the bomb", "A challenge where players must shake the phone in specific ways to defuse a virtual bomb before time runs out.", R.drawable.shake_the_bomb),
+        Triple("Maze escape", "A maze navigation game where players tilt the phone to guide a ball through obstacles and reach the exit.", R.drawable.maze_escape),
+        Triple("Reaction duel", "A reflex based game where players tap the screen as fast as possible after a random visual or audio signal.", R.drawable.reaction_duel)
     )
 
     val currentScreen = "games"
@@ -109,7 +109,7 @@ fun Games(navController: NavController) {
                 Pair(R.drawable.arrow_back, "back"),
                 Pair(R.drawable.ic_leaderbord, "leaderboard"),
                 Pair(R.drawable.ic_home, "home"),
-                Pair(R.drawable.ic_chat, "chat")
+                Pair(R.drawable.ic_chat, "friends_list")
             ),
             currentScreen = currentScreen,
             onIconClick = { screenName ->
@@ -178,7 +178,7 @@ fun GameCard(
             Text(
                 text = title,
                 style = MyTypography.montserratSB,
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 color = Color.Black,
                 modifier = Modifier.padding(top = 30.dp)
             )
@@ -186,7 +186,7 @@ fun GameCard(
             // Descrizione del gioco
             Text(
                 text = description,
-                fontSize = 14.sp,
+                fontSize = 10.sp,
                 fontFamily = Pontiac,
                 color = Color.Gray,
                 modifier = Modifier.padding(top = 8.dp)
