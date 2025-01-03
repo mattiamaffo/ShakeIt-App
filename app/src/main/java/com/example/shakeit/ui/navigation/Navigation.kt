@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.shakeit.data.domain.AuthRepository
+import com.example.shakeit.ui.elements.FriendsList
 import com.example.shakeit.ui.elements.Games
 import com.example.shakeit.ui.elements.HomePage
 import com.example.shakeit.ui.elements.Login
@@ -39,6 +40,9 @@ fun AppNavigation(navController: NavHostController) {
 
         composable("leaderboard") {
             ScorePage(navController = navController, authRepository = AuthRepository())
+        }
+        composable("friends_list") { // Aggiunta della schermata Friends List
+            FriendsList(navController = navController, authRepository = AuthRepository())
         }
     }
 }
