@@ -90,7 +90,7 @@ class AuthRepository {
     fun loginUser(
         usernameOrEmail: String,
         password: String,
-        onSuccess: (Int?) -> Unit, // Cambia il tipo per accettare un Int (ID avatar)
+        onSuccess: (Int?) -> Unit,
         onFailure: (String) -> Unit
     ) {
         if (usernameOrEmail.isEmpty() || password.isEmpty()) {
@@ -108,10 +108,10 @@ class AuthRepository {
                     if (task.isSuccessful) {
                         val userId = auth.currentUser?.uid
                         if (userId != null) {
-                            // Recupera il campo avatar
+
                             firestore.collection("users").document(userId).get()
                                 .addOnSuccessListener { document ->
-                                    val avatar = document.get("avatar") as? Int // Cambia getString con get e fai un cast
+                                    val avatar = document.get("avatar") as? Int
                                     onSuccess(avatar)
                                 }
                                 .addOnFailureListener { exception ->
@@ -133,12 +133,12 @@ class AuthRepository {
                     if (querySnapshot.documents.isNotEmpty()) {
                         val document = querySnapshot.documents[0]
                         val email = document.getString("email") ?: ""
-                        val avatar = document.get("avatar") as? Int // Cambia getString con get e fai un cast
+                        val avatar = document.get("avatar") as? Int
 
                         auth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
-                                    onSuccess(avatar) // Passa l'avatar al callback
+                                    onSuccess(avatar)
                                 } else {
                                     onFailure(task.exception?.message ?: "Invalid credentials.")
                                 }
@@ -168,7 +168,6 @@ class AuthRepository {
     fun isUserLoggedIn(): Boolean {
         return auth.currentUser != null
     }
-
 
     fun getCurrentUser(onResult: (FirebaseUser?) -> Unit) {
         val currentUser = auth.currentUser
@@ -213,17 +212,17 @@ class AuthRepository {
     fun updateUsername(newUsername: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         val userId = auth.currentUser?.uid
         if (userId != null) {
-            // Verifica che il nuovo username non sia già in uso
+
             firestore.collection("users")
                 .whereEqualTo("username", newUsername)
                 .get()
                 .addOnSuccessListener { documents ->
                     if (documents.isEmpty) {
-                        // Aggiorna l'username in `users`
+
                         firestore.collection("users").document(userId)
                             .update("username", newUsername)
                             .addOnSuccessListener {
-                                // Aggiorna l'username in `scores`
+
                                 firestore.collection("scores").document(userId)
                                     .update("username", newUsername)
                                     .addOnSuccessListener {
@@ -253,10 +252,9 @@ class AuthRepository {
         if (userId != null) {
             val initialScores = mapOf(
                 "username" to username,
-                "game1" to 0,
-                "game2" to 0,
-                "game3" to 0,
-                "game4" to 0
+                "Reaction Duel" to 0,
+                "Shake The Bomb" to 0,
+                "Maze Escape" to 0
             )
             firestore.collection("scores").document(userId)
                 .set(initialScores)
@@ -271,11 +269,57 @@ class AuthRepository {
         }
     }
 
+    fun updateMinigameScore(
+        gameName: String,
+        score: Int,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            val userScoreRef = firestore.collection("scores").document(userId)
+
+            userScoreRef.get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val currentScore = document.getLong(gameName) ?: 0
+                        val updatedScore = currentScore + score
+
+                        userScoreRef.update(gameName, updatedScore)
+                            .addOnSuccessListener {
+                                onSuccess()
+                            }
+                            .addOnFailureListener { e ->
+                                onFailure("Error updating $gameName score: ${e.message}")
+                            }
+                    } else {
+
+                        val newScoreData = mapOf(
+                            gameName to score
+                        )
+                        userScoreRef.set(newScoreData, com.google.firebase.firestore.SetOptions.merge())
+                            .addOnSuccessListener {
+                                onSuccess()
+                            }
+                            .addOnFailureListener { e ->
+                                onFailure("Error adding score for $gameName: ${e.message}")
+                            }
+                    }
+                }
+                .addOnFailureListener { e ->
+                    onFailure("Error retrieving $gameName score: ${e.message}")
+                }
+        } else {
+            onFailure("User not logged in.")
+        }
+    }
+
+
     fun getLeaderboardData(onSuccess: (List<MinigameData>) -> Unit, onFailure: (String) -> Unit) {
         firestore.collection("scores").get()
             .addOnSuccessListener { result ->
                 val leaderboardData = mutableListOf<MinigameData>()
-                val games = listOf("game1", "game2", "game3", "game4")
+                val games = listOf("Reaction Duel", "Shake The Bomb","Maze Escape")
 
                 games.forEach { game ->
                     val scores = result.documents.mapNotNull { doc ->
@@ -301,11 +345,11 @@ class AuthRepository {
             .whereEqualTo("username", username)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                // Usa la proprietà 'documents' per verificare se ci sono risultati
+
                 if (querySnapshot.documents.isNotEmpty()) {
                     val document = querySnapshot.documents[0]
                     val data = document.data?.toMutableMap() ?: mutableMapOf()
-                    data["documentId"] = document.id // Aggiungi l'ID del documento ai dati
+                    data["documentId"] = document.id
                     onResult(data)
                 } else {
                     onResult(null)
@@ -348,6 +392,17 @@ class AuthRepository {
                     onFailure(task.exception?.message ?: "Unknown error occurred")
                 }
             }
+    }
+
+    fun addFriendByQr(scannedUserId: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (currentUserId != null && scannedUserId != currentUserId) {
+            // Mutual friend
+            addMutualFriend(currentUserId, scannedUserId, onSuccess, onFailure)
+        } else {
+            onFailure("Invalid user ID or you can't add yourself.")
+        }
     }
 
     private fun initializeUserFriends(userId: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
