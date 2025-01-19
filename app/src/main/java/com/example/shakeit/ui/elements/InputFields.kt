@@ -139,16 +139,5 @@ fun InputFields(
             visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation()
         )
         Spacer(modifier = Modifier.height(5.dp))
-
-        Text(
-            text = "Forgot Password?",
-            color = Color.White,
-            style = MyTypography.montserratR.copy(fontSize = 12.sp),
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier
-                .align(Alignment.End)
-                .clickable { onForgotPasswordClick() }
-                .padding(end = 10.dp)
-        )
     }
 }
