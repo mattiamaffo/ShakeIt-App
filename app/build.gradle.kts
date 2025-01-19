@@ -69,9 +69,7 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.androidx.material.icons)
     implementation(libs.androidx.material.icons.extended)
-
-
-    // implementation(libs.androidx.material3.android)
+    implementation(libs.zxing.embedded)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
