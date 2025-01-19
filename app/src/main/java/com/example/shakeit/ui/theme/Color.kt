@@ -22,7 +22,7 @@ val Purple2 = Color(0xFF313044)
 val LightBlue2 = Color(0xFF52F2FD)
 val LightBlue3 = Color(0xFF00D1E0)
 val PurpleAvatar = Color(0xFFDCD2FB)
-val Purple3 = Color(0xFF432BB1)
+val Purple3 = Color(0xFF5C43CC)
 
 val PurpleGradient = Brush.horizontalGradient(
     colors = listOf(

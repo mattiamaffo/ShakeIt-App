@@ -11,47 +11,43 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.shakeit.ui.theme.Pontiac
-import com.example.shakeit.ui.theme.Purple1
-import com.example.shakeit.ui.theme.LightBlue1
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
-import kotlin.random.Random
+
+
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun QrGenerationPage(navController: NavController) {
-    val randomId = remember { Random.nextInt(100000, 999999).toString() } // Genera l'ID random e lo ricorda
-    val context = LocalContext.current
+    val userId = remember { FirebaseAuth.getInstance().currentUser?.uid ?: "UNKNOWN" }
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         // Background
-        Background() // Usa il tuo Composable Background qui
+        Background()
 
-        // Contenuto centrato
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Center, // Centra gli elementi verticalmente
-            horizontalAlignment = Alignment.CenterHorizontally // Centra gli elementi orizzontalmente
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "Your QR Code",
-                fontSize = 20.sp,
+                fontSize = 45.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White, // Cambia colore per visibilità sul background
+                color = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            val qrCodeBitmap = generateQrCode(randomId) // Usa l'ID random come dato per il QR
+            val qrCodeBitmap = generateQrCode(userId)
 
             if (qrCodeBitmap != null) {
                 Image(
@@ -65,13 +61,13 @@ fun QrGenerationPage(navController: NavController) {
 
             CustomButton(
                 text = "Back",
+                fontSize = 20,
                 onClick = { navController.navigateUp() },
                 textColor = Color.White
             )
         }
     }
 }
-
 fun generateQrCode(data: String): Bitmap? {
     return try {
         val size = 500

@@ -10,11 +10,14 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,35 +33,42 @@ import com.example.shakeit.R
 
 @Composable
 fun NavBar(
-    icons: List<Pair<Int, String>>, // Lista di icone e relativi screenName
-    currentScreen: String, // Schermata attuale
-    onIconClick: (String) -> Unit, // Azione al clic
-    onLogout: () -> Unit, // Azione al clic sulla freccia indietro
+    icons: List<Pair<Int, String>>,
+    currentScreen: String,
+    onIconClick: (String) -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(40.dp)
+            .offset(y = 30.dp)
+            .height(50.dp)
     ) {
-        // Sfondo della navbar
+        // Background of the navbar
         Image(
             painter = painterResource(id = R.drawable.navbar_bottom),
             contentDescription = "Navbar",
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+
         )
 
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 12.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            icons.forEach { (iconRes, screenName) ->
+            icons.forEachIndexed { index, (iconRes, screenName) ->
+                if (index > 0) {
+                    Spacer(modifier = Modifier.width(50.dp))
+                }
+
                 val isSelected = currentScreen == screenName
                 val iconAlpha = if (isSelected) 1f else 0.6f
-                val iconSize = if (isSelected) 26.dp else 22.dp
+                val iconSize = if (isSelected) 35.dp else 30.dp
 
                 Image(
                     painter = painterResource(id = iconRes),
@@ -76,6 +86,8 @@ fun NavBar(
                 )
             }
         }
+
+
     }
 }
 

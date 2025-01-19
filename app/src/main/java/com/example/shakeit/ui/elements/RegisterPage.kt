@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -46,35 +47,47 @@ fun RegisterPage(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp)
-                .offset(y = (-20).dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 15.dp, vertical = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // Back Button
             Icon(
                 painter = painterResource(id = R.drawable.arrow_back),
                 contentDescription = "Back to Login",
                 tint = Color.White,
                 modifier = Modifier
                     .align(Alignment.Start)
-                    .padding(start = 0.dp, top = 30.dp)
+                    .offset(y = 0.dp)
+                    .size(25.dp)
                     .clickable { navController.navigate("login") }
             )
-            // Logo and title
-            Logo(size = 140.dp)
+
+            Spacer(modifier = Modifier.height(0.dp))
+
+            // Logo and Title
+            Logo(size = 150.dp)
+
             Text(
                 text = "Create account",
-                style = Typography.titleLarge,
-                color = Color.White,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-            Text(
-                text = "Already have an account? Login",
-                style = Typography.headlineMedium,
+                style = MyTypography.montserratSB,
+                fontSize = 35.sp,
                 color = Color.White,
                 modifier = Modifier.padding(top = 4.dp)
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "Already have an account? Login",
+                style = MyTypography.montserratR,
+                textDecoration = TextDecoration.Underline,
+                fontSize = 10.sp,
+                color = Color.White,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .clickable { navController.navigate("login") }
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Register Form
             RegisterForm(
@@ -84,11 +97,13 @@ fun RegisterPage(
                 passwordState = passwordState
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Register Button
             CustomButton(
                 text = "Register",
+                width = 200,
+                height = 50,
                 onClick = {
                     authRepository.registerUser(
                         email = emailState.value,
@@ -104,7 +119,7 @@ fun RegisterPage(
                         }
                     )
                 },
-                fontSize = 18
+                fontSize = 23
             )
         }
 
@@ -116,11 +131,13 @@ fun RegisterPage(
                     Text(text = "Success!", style = MyTypography.montserratSB.copy(fontSize = 20.sp))
                 },
                 text = {
-                    Text(text = "You are redirected to the login page!", style = MyTypography.montserratR.copy(fontSize = 16.sp))
+                    Text(
+                        text = "You are redirected to the login page!",
+                        style = MyTypography.montserratR.copy(fontSize = 16.sp)
+                    )
                 },
-                confirmButton = {
-                    // No button (auto close)
-                }
+                confirmButton = {},
+                dismissButton = {}
             )
 
             // 3 seconds delay
@@ -131,6 +148,7 @@ fun RegisterPage(
             }
         }
 
+        // Error Dialog
         if (showDialog.value) {
             AlertDialog(
                 onDismissRequest = { showDialog.value = false },

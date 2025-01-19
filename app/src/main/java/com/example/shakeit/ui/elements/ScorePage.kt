@@ -49,16 +49,16 @@ fun ScorePage(navController: NavController, authRepository: AuthRepository) {
     val pagerState = rememberPagerState()
     val miniGameData = remember { mutableStateOf<List<MinigameData>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
-    val avatars = remember { mutableStateMapOf<String, Int>() } // Per memorizzare gli avatar recuperati
+    val avatars = remember { mutableStateMapOf<String, Int>() }
 
-    // Recupera i dati della classifica
+    // Load leaderboard data
     LaunchedEffect(Unit) {
         authRepository.getLeaderboardData(
             onSuccess = { leaderboard ->
                 miniGameData.value = leaderboard
                 isLoading.value = false
 
-                // Recupera gli avatar per i top giocatori
+                // Preload avatars
                 leaderboard.forEach { game ->
                     game.scores.take(3).forEach { (username, _) ->
                         if (!avatars.containsKey(username)) {
@@ -100,34 +100,44 @@ fun ScorePage(navController: NavController, authRepository: AuthRepository) {
                     .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-                // Titolo
+                // Title
                 Text(
                     text = "SCORE",
                     style = Typography.titleLarge,
+                    fontSize = 25.sp,
                     color = Color(0xFFF9A825),
                     modifier = Modifier.offset(y = 10.dp)
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(25.dp))
 
-                // Sezione Top 3
+                // Top 3
                 val topPlayers = miniGameData.value.firstOrNull()?.scores?.take(3) ?: emptyList()
+                // Order top players by score
+                val topPlayersReordered = listOfNotNull(
+                    topPlayers.getOrNull(1),
+                    topPlayers.getOrNull(0),
+                    topPlayers.getOrNull(2)
+                )
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceAround,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    topPlayers.forEachIndexed { index, (username, score) ->
-                        val isFirst = index == 0
-                        val avatarRes = avatars[username] ?: R.drawable.avatar
+                    topPlayersReordered.forEach { (username, score) ->
+                        // Compute original index
+                        val originalIndex = topPlayers.indexOfFirst { it.first == username }
+
+                        val isFirst = originalIndex == 0
 
                         TopPlayerCard(
-                            position = index + 1,
-                            avatarRes = avatarRes,
+                            position = originalIndex + 1,
+                            avatarRes = avatars[username] ?: R.drawable.avatar,
                             playerName = username,
                             score = score,
                             isFirst = isFirst
@@ -135,14 +145,14 @@ fun ScorePage(navController: NavController, authRepository: AuthRepository) {
                     }
                 }
 
-                // Divisore
+                // Divider
                 Divider(
                     color = Color.LightGray,
-                    thickness = 1.dp,
+                    thickness = 3.dp,
                     modifier = Modifier.padding(vertical = 2.dp)
                 )
 
-                // Pager per i minigiochi
+                // Pager
                 HorizontalPager(
                     count = miniGameData.value.size,
                     modifier = Modifier.weight(1f),
@@ -153,7 +163,7 @@ fun ScorePage(navController: NavController, authRepository: AuthRepository) {
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(25.dp))
 
                         Text(
                             text = currentGameData.name,
@@ -162,18 +172,18 @@ fun ScorePage(navController: NavController, authRepository: AuthRepository) {
                             color = Color.White
                         )
 
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
 
                         ScoreList(miniGameScores = currentGameData.scores)
                     }
                 }
 
-                // Indicatore del Pager
+                // Indicator for the pager
                 HorizontalPagerIndicator(
                     pagerState = pagerState,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
-                        .offset(y = (-55).dp),
+                        .offset(y = (-110).dp),
                     activeColor = Color(0xFFF9A825),
                     inactiveColor = Color.Gray,
                     indicatorWidth = 5.dp,
@@ -185,10 +195,10 @@ fun ScorePage(navController: NavController, authRepository: AuthRepository) {
 
         NavBar(
             icons = listOf(
-                Pair(R.drawable.back_vector, "back"),
-                Pair(R.drawable.chart_icon, "leaderboard"),
-                Pair(R.drawable.home_icon, "home"),
-                Pair(R.drawable.chat_icon, "friends_list")
+                Pair(R.drawable.arrow_back, "back"),
+                Pair(R.drawable.ic_leaderbord, "leaderboard"),
+                Pair(R.drawable.ic_home, "home"),
+                Pair(R.drawable.ic_chat, "friends_list")
             ),
             currentScreen = currentScreen,
             onIconClick = { screenName ->
@@ -201,14 +211,15 @@ fun ScorePage(navController: NavController, authRepository: AuthRepository) {
             },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .offset(y = (-10).dp)
+                .height(45.dp)
+                .offset(y = (-74).dp)
         )
     }
 }
 
 @Composable
 fun ScoreList(miniGameScores: List<Pair<String, Int>>) {
-    val remainingScores = miniGameScores.drop(3) // Rimuovi i primi 3 giocatori dalla lista
+    val remainingScores = miniGameScores.drop(3)
 
     Column(
         modifier = Modifier
@@ -217,7 +228,7 @@ fun ScoreList(miniGameScores: List<Pair<String, Int>>) {
         verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
         remainingScores.forEachIndexed { index, (playerName, score) ->
-            val isTop = index == 0 // Primo elemento della lista restante
+            val isTop = index == 0
             val isBottom = index == remainingScores.size - 1
             Row(
                 modifier = Modifier
@@ -231,29 +242,29 @@ fun ScoreList(miniGameScores: List<Pair<String, Int>>) {
                             bottomEnd = if (isBottom) 8.dp else 0.dp
                         )
                     )
-                    .background(Color(0xFF4A148C)) // Viola scuro
+                    .background(Color(0xFF4A148C))
                     .padding(vertical = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Posizione
+
                 Box(
                     modifier = Modifier
                         .size(32.dp)
                         .offset(x = 16.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFF9A825)), // Giallo
+                        .background(Color(0xFFF9A825)),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "${index + 4}", // Posizione (inizia dal quarto posto)
+                        text = "${index + 4}",
                         style = MyTypography.montserratSB,
                         fontSize = 16.sp,
                         color = Color.Black
                     )
                 }
 
-                // Nome giocatore
+                // Player name
                 Text(
                     text = playerName,
                     style = MyTypography.montserratSB,
@@ -263,7 +274,7 @@ fun ScoreList(miniGameScores: List<Pair<String, Int>>) {
                     textAlign = TextAlign.Start
                 )
 
-                // Punteggio
+                // Score
                 Text(
                     text = "$score",
                     style = MyTypography.montserratSB,
@@ -288,20 +299,20 @@ fun TopPlayerCard(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .width(if (isFirst) 100.dp else 80.dp)
+            .width(if (isFirst) 120.dp else 120.dp)
             .padding(vertical = 8.dp)
     ) {
         // Avatar
         Box(contentAlignment = Alignment.TopEnd) {
-            Avatar(cSize = if (isFirst) 90 else 70, aSize = if (isFirst) 80 else 60, avatarRes = avatarRes)
-            // Posizione
+            Avatar(cSize = if (isFirst) 80 else 60, aSize = if (isFirst) 70 else 50, avatarRes = avatarRes)
+
             Box(
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(20.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFF9A825)) // Giallo
+                    .background(Color(0xFFF9A825))
                     .align(Alignment.TopEnd)
-                    .padding(2.dp),
+                    .padding(1.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -313,24 +324,23 @@ fun TopPlayerCard(
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        // Nome giocatore
+
         Text(
             text = playerName,
             style = MyTypography.montserratSB,
-            fontSize = 14.sp,
+            fontSize = 15.sp,
             color = Color.White,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // Punteggio
         Text(
             text = "$score",
             style = MyTypography.montserratSB,
-            fontSize = 17.sp,
+            fontSize = 15.sp,
             color = Color.White, // Viola chiaro
             textAlign = TextAlign.Center,
             modifier = Modifier

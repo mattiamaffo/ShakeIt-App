@@ -26,6 +26,7 @@ import com.example.shakeit.R
 import com.example.shakeit.data.domain.AuthRepository
 import com.example.shakeit.ui.theme.MyTypography
 import com.example.shakeit.ui.theme.Pontiac
+import com.example.shakeit.util.SoundManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +37,7 @@ fun SettingsPage(navController: NavController, authRepository: AuthRepository) {
     val isAvatarDialogOpen = remember { mutableStateOf(false) }
     val selectedAvatar = remember { mutableStateOf(R.drawable.avatar) }
     var isSavingName by remember { mutableStateOf(false) }
-    val isLogoutDialogOpen = remember { mutableStateOf(false) } // Stato per il dialog del logout
+    val isLogoutDialogOpen = remember { mutableStateOf(false) }
     val isLoading = remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
@@ -60,7 +61,7 @@ fun SettingsPage(navController: NavController, authRepository: AuthRepository) {
                     isLoading.value = false
                 }
             } else {
-                navController.navigate("login") // Se non loggato, reindirizza
+                navController.navigate("login")
             }
         }
     }
@@ -81,7 +82,7 @@ fun SettingsPage(navController: NavController, authRepository: AuthRepository) {
                     .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 // Avatar
                 Avatar(
@@ -104,7 +105,7 @@ fun SettingsPage(navController: NavController, authRepository: AuthRepository) {
                             value = username,
                             onValueChange = { username = it },
                             textStyle = MyTypography.montserratSB.copy(
-                                fontSize = 18.sp,
+                                fontSize = 25.sp,
                                 color = Color.White,
                                 textAlign = TextAlign.Center
                             ),
@@ -143,7 +144,7 @@ fun SettingsPage(navController: NavController, authRepository: AuthRepository) {
                         Text(
                             text = username,
                             style = MyTypography.montserratSB,
-                            fontSize = 18.sp,
+                            fontSize = 25.sp,
                             color = Color.White,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
@@ -153,14 +154,14 @@ fun SettingsPage(navController: NavController, authRepository: AuthRepository) {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(60.dp))
+                Spacer(modifier = Modifier.height(100.dp))
 
                 // CustomButton
                 CustomButton(
                     text = "Change avatar",
-                    width = 200,
-                    height = 45,
-                    fontSize = 18,
+                    width = 300,
+                    height = 60,
+                    fontSize = 24,
                     onClick = {
                         if (!isSavingName) {
                             isAvatarDialogOpen.value = true
@@ -170,42 +171,66 @@ fun SettingsPage(navController: NavController, authRepository: AuthRepository) {
                 Spacer(modifier = Modifier.height(20.dp))
                 CustomButton(
                     text = "Change name",
-                    width = 200,
-                    height = 45,
-                    fontSize = 18,
+                    width = 300,
+                    height = 60,
+                    fontSize = 24,
                     onClick = {
                         isEditing = true
                         username = ""
                     }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                CustomButton(
-                    text = "Generate QR",
-                    width = 200,
-                    height = 45,
-                    fontSize = 18,
-                    onClick = { navController.navigate("qr_generation") }
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CustomButton(
+                        text = "Generate QR",
+                        width = 220,
+                        height = 60,
+                        fontSize = 24,
+                        onClick = { navController.navigate("qr_generation") }
+                    )
+
+                    Spacer(modifier = Modifier.width(20.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .background(Color(0xFF6200EA), shape = RoundedCornerShape(16.dp))
+                            .clickable { navController.navigate("qr_scanner") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "+",
+                            style = MyTypography.montserratSB.copy(fontSize = 30.sp),
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(20.dp))
                 CustomButton(
                     text = "Logout",
-                    width = 200,
-                    height = 45,
-                    fontSize = 18,
+                    width = 300,
+                    height = 60,
+                    fontSize = 24,
                     backgroundColor = Color(0xFFE74C3C),
                     textColor = Color.White,
                     onClick = {
-                        isLogoutDialogOpen.value = true // Mostra il dialog del logout
+                        isLogoutDialogOpen.value = true
                     }
                 )
             }
-
             NavBar(
                 icons = listOf(
-                    Pair(R.drawable.back_vector, "back"),
-                    Pair(R.drawable.chart_icon, "leaderboard"),
-                    Pair(R.drawable.home_icon, "home"),
-                    Pair(R.drawable.chat_icon, "friends_list")
+                    Pair(R.drawable.arrow_back, "home"),
+                    Pair(R.drawable.ic_leaderbord, "leaderboard"),
+                    Pair(R.drawable.ic_home, "home"),
+                    Pair(R.drawable.ic_chat, "friends_list")
                 ),
                 currentScreen = currentScreen,
                 onIconClick = { screenName ->
@@ -218,7 +243,7 @@ fun SettingsPage(navController: NavController, authRepository: AuthRepository) {
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .offset(y = (-16).dp)
+                    .offset(y = (-70).dp)
             )
         }
 
@@ -275,11 +300,13 @@ fun AvatarSelectionDialog(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f)) // Oscura lo sfondo
+            .background(Color.Black.copy(alpha = 0.5f))
             .clickable(onClick = onDismissRequest)
     ) {
         Box(
             modifier = Modifier
+                .width(550.dp)
+                .height(350.dp)
                 .align(Alignment.Center)
                 .padding(16.dp)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
@@ -291,23 +318,26 @@ fun AvatarSelectionDialog(
                 Text(
                     text = "Select Avatar",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
+                    fontSize = 32.sp,
                     color = Color.Black
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(45.dp))
 
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.padding(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(22.dp),
+                    modifier = Modifier.padding(3.dp)
                 ) {
                     AvatarOption(R.drawable.avatar, onAvatarSelected)
                     AvatarOption(R.drawable.avatar2, onAvatarSelected)
                     AvatarOption(R.drawable.avatar3, onAvatarSelected)
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(60.dp))
                 CustomButton(
                     text = "Cancel",
+                    width = 200,
+                    height = 50,
+                    fontSize = 24,
                     backgroundColor = Color.Gray,
                     textColor = Color.White,
                     onClick = onDismissRequest
@@ -323,7 +353,7 @@ fun AvatarOption(avatarRes: Int, onAvatarSelected: (Int) -> Unit) {
         painter = painterResource(id = avatarRes),
         contentDescription = "Avatar Option",
         modifier = Modifier
-            .size(80.dp)
+            .size(90.dp)
             .clip(CircleShape)
             .clickable { onAvatarSelected(avatarRes) }
     )

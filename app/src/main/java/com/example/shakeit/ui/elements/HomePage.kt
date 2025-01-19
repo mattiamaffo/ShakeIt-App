@@ -30,7 +30,9 @@ import com.example.shakeit.ui.theme.Yellow1
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.TextButton
@@ -38,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.example.shakeit.data.domain.AuthRepository
 import com.example.shakeit.ui.theme.LightBlue3
 import com.example.shakeit.ui.theme.MyTypography
@@ -52,6 +55,9 @@ fun HomePage(navController: NavController, authRepository: AuthRepository) {
     val isAvatarDialogOpen = remember { mutableStateOf(false) }
     val selectedAvatar = remember { mutableStateOf<Int?>(null) } // Avatar selezionato
     val isLoading = remember { mutableStateOf(true) }
+
+    var selectedGame by remember { mutableStateOf<String?>(null) }
+    var isPopupOpen by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         authRepository.getCurrentUser { user ->
@@ -91,96 +97,116 @@ fun HomePage(navController: NavController, authRepository: AuthRepository) {
                 CircularProgressIndicator(color = Color.White)
             }
         } else {
-            // Contenuto principale
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Avatar(
-                    modifier = Modifier.size(48.dp),
-                    avatarRes = selectedAvatar.value ?: R.drawable.avatar
-                )
-
-                Image(
-                    painter = painterResource(id = R.drawable.ic_settings),
-                    contentDescription = "Settings",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clickable {
-                            navController.navigate("settings")
-                        }
-                )
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
+            // Main Content
             Column(
                 modifier = Modifier
-                    .width(300.dp)
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .offset(y = 20.dp)
+                    .padding(horizontal = 50.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // Header
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Avatar(
+                        modifier = Modifier
+                            .offset(x = -(30).dp)
+                            .size(70.dp),
+                        aSize = 100,
+                        avatarRes = selectedAvatar.value ?: R.drawable.avatar
+                    )
 
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_settings),
+                        contentDescription = "Settings",
+                        modifier = Modifier
+                            .offset(x = (30).dp)
+                            .size(30.dp)
+                            .clickable {
+                                navController.navigate("settings")
+                            }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // Title
+                Text(
+                    text = selectedGame ?: "Choose a Game",
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier
+                        .offset(y = (-20).dp)
+                        .padding(horizontal = 8.dp)
+                )
+
+                // Main Blocks
                 YellowBlock(
                     title = "Beat your friends in the minigames",
-                    subBlockTitle = "MiniGames",
+                    subBlockTitle = "Minigames",
                     initialColor = Yellow1,
                     targetColor = Yellow2,
                     iconRes = R.drawable.shake,
-                    iconSize = 80,
+                    iconSize = 90,
                     iconBottomOffset = 10,
                     onSubBlockClick = { navController.navigate("games") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(120.dp)
+                        .heightIn(min = 50.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Seconda sezione (due colonne)
+                // Row Blocks
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Colonna sinistra
+                    // Left Column
                     Column(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Block(
-                            title = "Play Vs Robot",
+                            title = "Singleplayer",
                             initialColor = Purple1,
                             targetColor = Purple3,
                             iconRes = R.drawable.icon_robot,
                             extraTopOffset = 6,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(130.dp)
+                                .heightIn(min = 120.dp)
+                                .clickable {
+                                    when (selectedGame) {
+                                        "Reaction Duel" -> navController.navigate("reactionduel")
+                                        "Shake the Bomb" -> navController.navigate("shakebomb")
+                                        "Tilt Maze Escape" -> navController.navigate("maze_escape?seed=${System.currentTimeMillis()}")
+                                        else -> println("Game not implemented yet")
+                                    }
+                                }
                         )
                         Block(
-                            title = "Play Vs Friend",
+                            title = "Multiplayer",
                             initialColor = LightBlue1,
                             targetColor = LightBlue3,
                             iconRes = R.drawable.icon_friends,
                             extraTopOffset = 6,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(130.dp)
+                                .heightIn(min = 120.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
 
+                    // Right Column
                     Column(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         ScoreBlock(
                             title = "Score",
@@ -190,18 +216,18 @@ fun HomePage(navController: NavController, authRepository: AuthRepository) {
                             iconRes = R.drawable.icon_score,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(60.dp)
+                                .height(69.dp)
                         )
                         Block(
-                            title = "Practice",
+                            title = "Training",
                             initialColor = LightBlue1,
                             targetColor = LightBlue3,
                             iconRes = R.drawable.icon_practice,
-                            fontSize = 18,
+                            fontSize = 14,
                             extraTopOffset = 10,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .aspectRatio(1f)
+                                .height(90.dp)
                         )
                         PlayBlock(
                             title = "PLAY",
@@ -209,53 +235,76 @@ fun HomePage(navController: NavController, authRepository: AuthRepository) {
                             targetColor = Purple3,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(60.dp)
+                                .height(69.dp)
+                                .clickable { isPopupOpen = true }
                         )
                     }
                 }
-            }
-            NavBar(
-                icons = listOf(
-                    Pair(R.drawable.back_vector, "back"),
-                    Pair(R.drawable.chart_icon, "leaderboard"),
-                    Pair(R.drawable.home_icon, "home"),
-                    Pair(R.drawable.chat_icon, "friends_list")
-                ),
-                currentScreen = currentScreen,
-                onIconClick = { screenName ->
-                    println("Navigating to $screenName")
-                    navController.navigate(screenName)
-                },
-                onLogout = {
-                    println("Logout clicked") // Debug
-                    showLogoutDialog.value = true
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .offset(y = (-16).dp)
-            )
 
-            if (showLogoutDialog.value) {
-                LogoutDialog(
-                    onConfirm = {
-                        authRepository.logoutUser {
-                            navController.navigate("login") // Logout e reindirizzamento
-                        }
-                        showLogoutDialog.value = false
-                    },
-                    onDismiss = {
-                        showLogoutDialog.value = false // Chiudi il popup
-                    }
-                )
+                Spacer(modifier = Modifier.height(0.dp))
+
+                // Navigation Bar
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    NavBar(
+                        icons = listOf(
+                            Pair(R.drawable.arrow_back, "back"),
+                            Pair(R.drawable.ic_leaderbord, "leaderboard"),
+                            Pair(R.drawable.ic_home, "home"),
+                            Pair(R.drawable.ic_chat, "friends_list")
+                        ),
+                        currentScreen = currentScreen,
+                        onIconClick = { screenName ->
+                            println("Navigating to $screenName")
+                            navController.navigate(screenName)
+                        },
+                        onLogout = {
+                            println("Logout clicked") // Debug
+                            showLogoutDialog.value = true
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
             }
         }
+
+        // Logout Dialog
+        if (showLogoutDialog.value) {
+            LogoutDialog(
+                onConfirm = {
+                    authRepository.logoutUser {
+                        navController.navigate("login")
+                    }
+                    showLogoutDialog.value = false
+                },
+                onDismiss = {
+                    showLogoutDialog.value = false
+                }
+            )
+        }
+
+        // Game Selection Popup
+        if (isPopupOpen) {
+            GameSelectionPopup(
+                onGameSelected = { game ->
+                    selectedGame = game
+                    isPopupOpen = false
+                },
+                onDismiss = { isPopupOpen = false }
+            )
+        }
+
+        // Avatar Dialog
         if (isAvatarDialogOpen.value) {
             AvatarSelectionDialog(
                 onAvatarSelected = { avatar ->
                     selectedAvatar.value = avatar
                     isAvatarDialogOpen.value = false
                     print("Avatar selezionato: $avatar")
-                    authRepository.updateUserAvatar(avatar) // Salva l'avatar nel database
+                    authRepository.updateUserAvatar(avatar) // Save the avatar in the database
                 },
                 onDismissRequest = {
                     isAvatarDialogOpen.value = false
@@ -265,26 +314,75 @@ fun HomePage(navController: NavController, authRepository: AuthRepository) {
     }
 }
 
+
 @Composable
 fun LogoutDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
+        modifier = Modifier
+            .height(200.dp)
+            .width(500.dp),
         onDismissRequest = onDismiss,
         title = {
-            Text(text = "Do you want to logout?", style = MyTypography.montserratSB.copy(fontSize = 20.sp))
+            Text(text = "Do you want to logout?", style = MyTypography.montserratSB.copy(fontSize = 25.sp), lineHeight = 30.sp)
         },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(text = "Yes", style = MyTypography.montserratSB.copy(fontSize = 18.sp))
+            TextButton(onClick = onConfirm, Modifier.offset(y= 40.dp)) {
+                Text(text = "Yes", style = MyTypography.montserratSB.copy(fontSize = 30.sp))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = "No", style = MyTypography.montserratSB.copy(fontSize = 18.sp))
+            TextButton(onClick = onDismiss, Modifier.offset(y= 40.dp)) {
+                Text(text = "No", style = MyTypography.montserratSB.copy(fontSize = 30.sp))
             }
         }
     )
 }
 
+@Composable
+fun GameSelectionPopup(onGameSelected: (String) -> Unit, onDismiss: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.6f))
+            .clickable { onDismiss() },
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .width(300.dp)
+                .height(200.dp)
+                .offset(y = (20).dp)
+                .padding(20.dp)
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            val games = listOf("Reaction Duel", "Shake the Bomb", "Tilt Maze Escape")
+            val icons = listOf(
+                R.drawable.reaction_duel,
+                R.drawable.shake_the_bomb,
+                R.drawable.maze_escape
+            )
+
+            games.forEachIndexed { index, game ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .clickable { onGameSelected(game) }
+                ) {
+                    Image(
+                        painter = painterResource(id = icons[index]),
+                        contentDescription = "$game Icon",
+                        modifier = Modifier.size(80.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = game, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun Block(
@@ -292,10 +390,10 @@ fun Block(
     initialColor: Color = Color.White,
     targetColor: Color = Color.White,
     iconRes: Int? = null,
-    iconSize: Int = 80,
+    iconSize: Int = 60,
     extraBottomOffset: Int = 0,
     extraTopOffset: Int = 0,
-    fontSize: Int = 14,
+    fontSize: Int = 17,
     modifier: Modifier = Modifier
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "")
@@ -310,7 +408,10 @@ fun Block(
 
     Box(
         modifier = modifier
-            .background(color = animatedColor, shape = RoundedCornerShape(20.dp)) // Sfondo e bordi arrotondati
+            .background(
+                color = animatedColor,
+                shape = RoundedCornerShape(20.dp)
+            )
             .padding(8.dp),
         contentAlignment = Alignment.TopCenter
     ) {
@@ -321,8 +422,8 @@ fun Block(
             color = Color.Black,
             fontFamily = Pontiac,
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(y = (-extraTopOffset).dp)
+                .align(Alignment.TopStart)
+                .offset(y = (-extraTopOffset).dp, x = 8.dp)
                 .padding(top = 8.dp)
         )
 
@@ -359,12 +460,12 @@ fun PlayBlock(
     Box(
         modifier = modifier
             .background(color = animatedColor, shape = RoundedCornerShape(20.dp))
-            .padding(16.dp),
-        contentAlignment = Alignment.Center // Centra il testo
+            .padding(13.dp),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = title,
-            fontSize = 25.sp,
+            fontSize = 23.sp,
             fontWeight = FontWeight.Black,
             color = Color.White,
             fontFamily = Pontiac
@@ -393,7 +494,7 @@ fun ScoreBlock(
     Box(
         modifier = modifier
             .background(color = animatedColor, shape = RoundedCornerShape(20.dp))
-            .padding(16.dp)
+            .padding(14.dp)
             .clickable { onBlockClick() },
     ) {
         Row(
@@ -405,19 +506,19 @@ fun ScoreBlock(
                 painter = painterResource(id = iconRes),
                 contentDescription = "$title Icon",
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(60.dp)
                     .weight(1f)
             )
 
             Text(
                 text = title,
-                fontSize = 20.sp,
+                fontSize = 21.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.Black,
                 fontFamily = Pontiac,
                 modifier = Modifier
                     .weight(3f)
-                    .padding(start = 10.dp)
+                    .padding(start = 5.dp)
             )
         }
     }
@@ -433,7 +534,7 @@ fun YellowBlock(
     iconRes: Int? = null,
     iconSize: Int = 80,
     iconBottomOffset: Int = 10,
-    subBlockOffset: Int = 8,
+    subBlockOffset: Int = 10,
     onSubBlockClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -449,7 +550,7 @@ fun YellowBlock(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(150.dp)
             .background(color = animatedColor, shape = RoundedCornerShape(20.dp))
             .padding(8.dp)
     ) {
@@ -460,10 +561,11 @@ fun YellowBlock(
             color = Color.Black,
             fontFamily = Pontiac,
             maxLines = 3,
+            lineHeight = 20.sp,
             softWrap = true,
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .width(300.dp)
+                .align(Alignment.TopStart)
+                .width(350.dp)
                 .padding(start = subBlockOffset.dp, top = 8.dp)
         )
 
@@ -471,15 +573,15 @@ fun YellowBlock(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .height(40.dp)
-                .width(80.dp)
+                .width(100.dp)
                 .offset(x = subBlockOffset.dp)
-                .background(color = subBlockColor, shape = RoundedCornerShape(12.dp))
+                .background(color = subBlockColor, shape = RoundedCornerShape(15.dp))
                 .clickable { onSubBlockClick() }
                 .padding(8.dp)
         ) {
             Text(
                 text = subBlockTitle,
-                fontSize = 10.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
                 fontFamily = Pontiac,

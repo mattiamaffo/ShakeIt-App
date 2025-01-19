@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.example.shakeit.R
 
 @Composable
-fun Logo(size: Dp = 250.dp, padding: Dp = 0.dp) {
+fun Logo(size: Dp = 250.dp, padding: Dp = 0.dp, modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(id = R.drawable.logo_nuovo),
         contentDescription = null,

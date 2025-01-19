@@ -46,24 +46,26 @@ fun RegisterForm(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 32.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
-        // Campo Nome
+        // Name
         OutlinedTextField(
             value = nameState.value,
             onValueChange = { nameState.value = it },
-            placeholder = { Text("Username*", style = TextStyle(fontSize = 12.sp, fontFamily = Montserrat, color = Color.Gray)) },
+            placeholder = { Text("Username*", style = MyTypography.montserratR.copy(fontSize = 17.sp, color = Color.Gray)) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.drawable.ic_person),
                     contentDescription = "Name Icon",
-                    modifier = Modifier.size(15.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             },
-            textStyle = MyTypography.montserratR.copy(fontSize = 12.sp),
+            textStyle = MyTypography.montserratR.copy(fontSize = 17.sp),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
+                .heightIn(min = 40.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
@@ -73,32 +75,28 @@ fun RegisterForm(
                 unfocusedBorderColor = Color(0xFFBDBDBD)
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-
-                    keyboardController?.hide()
-
-                }
-            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            }),
             singleLine = true
         )
 
-        // Campo Email
+        // Email
         OutlinedTextField(
             value = emailState.value,
             onValueChange = { emailState.value = it },
-            placeholder = { Text("Email*", style = TextStyle(fontSize = 12.sp, fontFamily = Montserrat, color = Color.Gray)) },
+            placeholder = { Text("Email*", style = MyTypography.montserratR.copy(fontSize = 17.sp, color = Color.Gray)) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.drawable.ic_email),
                     contentDescription = "Email Icon",
-                    modifier = Modifier.size(15.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             },
-            textStyle = MyTypography.montserratR.copy(fontSize = 12.sp),
+            textStyle = MyTypography.montserratR.copy(fontSize = 17.sp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
+                .heightIn(min = 40.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
@@ -108,32 +106,28 @@ fun RegisterForm(
                 unfocusedBorderColor = Color(0xFFBDBDBD)
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-
-                    keyboardController?.hide()
-
-                }
-            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            }),
             singleLine = true
         )
 
-        // Campo Numero di Telefono
+        // Cellular Number
         OutlinedTextField(
             value = phoneNumberState.value,
             onValueChange = { phoneNumberState.value = it },
-            placeholder = { Text("Phone Number", style = TextStyle(fontSize = 12.sp, fontFamily = Montserrat, color = Color.Gray)) },
+            placeholder = { Text("Phone Number", style = MyTypography.montserratR.copy(fontSize = 17.sp, color = Color.Gray)) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.drawable.ic_phone),
                     contentDescription = "Phone Icon",
-                    modifier = Modifier.size(15.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             },
-            textStyle = MyTypography.montserratR.copy(fontSize = 12.sp),
+            textStyle = MyTypography.montserratR.copy(fontSize = 17.sp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
+                .heightIn(min = 40.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
@@ -143,32 +137,29 @@ fun RegisterForm(
                 unfocusedBorderColor = Color(0xFFBDBDBD)
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-
-                    keyboardController?.hide()
-
-                }
-            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            }),
             singleLine = true
         )
 
-        // Campo Password
+        // Password
         OutlinedTextField(
             value = passwordState.value,
             onValueChange = { passwordState.value = it },
-            placeholder = { Text("Password*", style = TextStyle(fontSize = 12.sp, fontFamily = Montserrat, color = Color.Gray)) },
+            placeholder = { Text("Password*", style = MyTypography.montserratR.copy(fontSize = 17.sp, color = Color.Gray)) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.drawable.ic_lock),
                     contentDescription = "Password Icon",
-                    modifier = Modifier.size(15.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             },
-            textStyle = MyTypography.montserratR.copy(fontSize = 12.sp),
+            textStyle = MyTypography.montserratR.copy(fontSize = 17.sp),
+            shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
+                .heightIn(min = 40.dp),
             visualTransformation = PasswordVisualTransformation(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedTextColor = Color.Black,
@@ -179,11 +170,9 @@ fun RegisterForm(
                 unfocusedBorderColor = Color(0xFFBDBDBD)
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                }
-            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            }),
             singleLine = true
         )
     }

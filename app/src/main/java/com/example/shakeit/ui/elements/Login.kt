@@ -1,11 +1,16 @@
 package com.example.shakeit.ui.elements
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,46 +46,90 @@ fun Login(navController: NavHostController) {
         contentAlignment = Alignment.TopCenter
     ) {
         Background()
-        Logo()
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 200.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .offset(y = 30.dp)
+                .padding(horizontal = 30.dp, vertical = 0.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            InputFields(
-                onForgotPasswordClick = {},
-                usernameState = usernameState,
-                passwordState = passwordState
-            )
-            ActionButtons(
-                onLoginClick = {
-                    isLoading.value = true
-                    authRepository.loginUser(
-                        usernameOrEmail = usernameState.value,
-                        password = passwordState.value,
-                        onSuccess = {
-                            isLoading.value = false
-                            navController.navigate("home")
-                        },
-                        onFailure = { error ->
-                            isLoading.value = false
-                            errorMessage.value = error
-                            showErrorDialog.value = true
-                        }
-                    )
-                },
-                onRegisterClick = {
-                    navController.navigate("register")
-                }
+            // Logo
+            Logo(
+                size = 200.dp,
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .aspectRatio(1f)
             )
 
-            // Loading Indicator
-            if (isLoading.value) {
-                Spacer(modifier = Modifier.height(32.dp))
-                CircularProgressIndicator(
-                    color = Color(0xFFFFFFFF),
-                    strokeWidth = 2.dp
+            // Login Form
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 2.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                InputFields(
+                    onForgotPasswordClick = {},
+                    usernameState = usernameState,
+                    passwordState = passwordState
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                ActionButtons(
+                    onLoginClick = {
+                        isLoading.value = true
+                        authRepository.loginUser(
+                            usernameOrEmail = usernameState.value,
+                            password = passwordState.value,
+                            onSuccess = {
+                                isLoading.value = false
+                                navController.navigate("home")
+                            },
+                            onFailure = { error ->
+                                isLoading.value = false
+                                errorMessage.value = error
+                                showErrorDialog.value = true
+                            }
+                        )
+                    },
+                    onRegisterClick = {
+                        navController.navigate("register")
+                    }
+                )
+
+                // Loading Indicator
+                if (isLoading.value) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    CircularProgressIndicator(
+                        color = Color(0xFFFFFFFF),
+                        strokeWidth = 2.dp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(150.dp))
+
+            // Footer
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 30.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Don't have an account? ",
+                    style = MyTypography.montserratR.copy(fontSize = 10.sp),
+                    color = Color.White
+                )
+                Text(
+                    text = "Sign Up",
+                    style = MyTypography.montserratSB.copy(fontSize = 10.sp),
+                    color = Color.Yellow,
+                    modifier = Modifier.clickable {
+                        navController.navigate("register")
+                    }
                 )
             }
         }
@@ -106,4 +155,5 @@ fun Login(navController: NavHostController) {
         )
     }
 }
+
 

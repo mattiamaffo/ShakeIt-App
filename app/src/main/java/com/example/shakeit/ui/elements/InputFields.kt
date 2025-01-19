@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,37 +51,42 @@ fun InputFields(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 32.dp, vertical = 20.dp),
+            .padding(horizontal = 22.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        // Campo Username
+        // Username Field
         OutlinedTextField(
             value = usernameState.value,
             onValueChange = { usernameState.value = it },
             placeholder = { Text(
                 text = "Username",
+                color = Color.Gray,
                 style = MyTypography.montserratR.copy(
-                    fontSize = 14.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Light
+
                 )
             ) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.drawable.alt_email),
                     contentDescription = "Email Icon",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             },
             singleLine = true,
             textStyle = MyTypography.montserratR.copy(
-                fontSize = 14.sp,
+                fontSize = 20.sp,
+                color = Color.Black,
                 fontWeight = FontWeight.Light
             ),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
             containerColor = Color(0xFFE0E0E0), // Background color
-            focusedBorderColor = Color(0xFF4742A7), // Colore del bordo quando la casella è selezionata
-            unfocusedBorderColor = Color(0xFFBDBDBD) // Colore del bordo quando la casella non è selezionata
+            focusedBorderColor = Color(0xFF4742A7), // Color of the border when the field is selected
+            unfocusedBorderColor = Color(0xFFBDBDBD) // Color of the border when the field is not selected
             ),
             shape = RoundedCornerShape(30.dp)
         )
@@ -91,13 +99,14 @@ fun InputFields(
                 Text(
                     text = "Password",
                     style = MyTypography.montserratR.copy(
-                        fontSize = 14.sp,
+                        fontSize = 20.sp,
+                        color = Color.Gray,
                         fontWeight = FontWeight.Light
                     )
                 )
             },
             leadingIcon = {
-                Icon(Icons.Filled.Lock, contentDescription = "Password Icon")
+                Icon(Icons.Filled.Lock, contentDescription = "Password Icon", Modifier.size(20.dp), tint = Color.Black)
             },
             trailingIcon = {
                 IconButton(
@@ -113,12 +122,14 @@ fun InputFields(
             },
             singleLine = true,
             textStyle = MyTypography.montserratR.copy(
-                fontSize = 14.sp,
+                fontSize = 20.sp,
+                color = Color.Black,
                 fontWeight = FontWeight.Light
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp),
+                .offset(y = 10.dp)
+                .height(60.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = Color(0xFFE0E0E0),
                 focusedBorderColor = Color(0xFF4742A7),
@@ -127,11 +138,12 @@ fun InputFields(
             shape = RoundedCornerShape(30.dp),
             visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation()
         )
+        Spacer(modifier = Modifier.height(5.dp))
 
         Text(
             text = "Forgot Password?",
             color = Color.White,
-            style = Typography.bodySmall,
+            style = MyTypography.montserratR.copy(fontSize = 12.sp),
             textDecoration = TextDecoration.Underline,
             modifier = Modifier
                 .align(Alignment.End)

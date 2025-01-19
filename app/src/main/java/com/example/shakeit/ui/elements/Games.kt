@@ -24,9 +24,8 @@ import com.example.shakeit.ui.theme.Pontiac
 
 @Composable
 fun Games(navController: NavController) {
-    // Lista dei giochi
+    // Games list
     val games = listOf(
-        Triple("Memory Rush", "A memory game where players replicate a sequence of colors or images that gets progressively harder.", R.drawable.memory_rush),
         Triple("Shake the bomb", "A challenge where players must shake the phone in specific ways to defuse a virtual bomb before time runs out.", R.drawable.shake_the_bomb),
         Triple("Maze escape", "A maze navigation game where players tilt the phone to guide a ball through obstacles and reach the exit.", R.drawable.maze_escape),
         Triple("Reaction duel", "A reflex based game where players tap the screen as fast as possible after a random visual or audio signal.", R.drawable.reaction_duel)
@@ -46,14 +45,14 @@ fun Games(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
                 text = "GAMES",
-                fontSize = 32.sp,
+                fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFFFFD54F),
                 fontFamily = Pontiac
@@ -63,7 +62,7 @@ fun Games(navController: NavController) {
 
             ProgressBar(currentIndex = currentIndex, total = games.size)
 
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
             Box(
                 modifier = Modifier.fillMaxWidth(),
@@ -78,7 +77,8 @@ fun Games(navController: NavController) {
                     },
                     modifier = Modifier
                         .align(Alignment.CenterStart)
-                        .padding(start = 5.dp)
+                        .padding(start = 2.dp)
+                        .offset(x = (-60).dp)
                 )
 
                 // Card
@@ -87,8 +87,8 @@ fun Games(navController: NavController) {
                     description = games[currentIndex].second,
                     imageRes = games[currentIndex].third,
                     modifier = Modifier
-                        .width(250.dp)
-                        .height(300.dp)
+                        .width(400.dp)
+                        .height(380.dp)
                         .padding(horizontal = 16.dp)
                 )
 
@@ -100,7 +100,8 @@ fun Games(navController: NavController) {
                     },
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .padding(end = 5.dp)
+                        .padding(end = 2.dp)
+                        .offset(x = 60.dp)
                 )
             }
         }
@@ -122,7 +123,7 @@ fun Games(navController: NavController) {
             },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .offset(y = (-16).dp)
+                .offset(y = (-70).dp)
         )
     }
 }
@@ -148,7 +149,7 @@ fun ProgressBar(currentIndex: Int, total: Int) {
 fun GameCard(
     title: String,
     description: String,
-    imageRes: Int? = null, // Risorsa immagine opzionale
+    imageRes: Int? = null,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -169,27 +170,28 @@ fun GameCard(
                     contentDescription = "Game Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(100.dp)
+                        .height(90.dp)
                         .clip(RoundedCornerShape(10.dp))
                 )
             }
 
-            // Nome del gioco
+            // Name
             Text(
                 text = title,
                 style = MyTypography.montserratSB,
-                fontSize = 16.sp,
+                fontSize = 24.sp,
                 color = Color.Black,
                 modifier = Modifier.padding(top = 30.dp)
             )
 
-            // Descrizione del gioco
+            // Description
             Text(
                 text = description,
-                fontSize = 10.sp,
+                fontSize = 22.sp,
+                lineHeight = 22.sp,
                 fontFamily = Pontiac,
                 color = Color.Gray,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = 12.dp)
             )
         }
     }
@@ -204,7 +206,7 @@ fun NavigationArrow(iconRes: Int, onClick: () -> Unit, modifier: Modifier = Modi
         painter = painterResource(id = iconRes),
         contentDescription = "Navigation Arrow",
         modifier = modifier
-            .size(60.dp)
+            .size(90.dp)
             .clickable { onClick() }
     )
 }

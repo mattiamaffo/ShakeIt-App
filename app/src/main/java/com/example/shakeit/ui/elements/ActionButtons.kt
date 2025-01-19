@@ -15,7 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.shakeit.ui.theme.LightBlue1
+import com.example.shakeit.ui.theme.MyTypography
 import com.example.shakeit.ui.theme.Purple1
 import com.example.shakeit.ui.theme.Purple2
 import com.example.shakeit.ui.theme.Typography
@@ -27,8 +29,8 @@ fun ActionButtons(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 57.dp, vertical = 15.dp),
+            .width(1200.dp)
+            .padding(horizontal = 20.dp, vertical = 15.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Login
@@ -37,9 +39,9 @@ fun ActionButtons(
             colors = ButtonDefaults.buttonColors(containerColor = Purple1),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.weight(1f)
-                .height(45.dp)
+                .height(50.dp)
         ) {
-            Text(text = "Login", color = Color.White, style = Typography.bodyLarge)
+            Text(text = "Login", color = Color.White, style = MyTypography.montserratSB, fontSize = 20.sp)
         }
 
         // Register
@@ -48,9 +50,9 @@ fun ActionButtons(
             colors = ButtonDefaults.buttonColors(containerColor = LightBlue1),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.weight(1f)
-                .height(45.dp)
+                .height(50.dp)
         ) {
-            Text(text = "Register", color = Purple2, style = Typography.bodyLarge)
+            Text(text = "Register", color = Purple2, style = MyTypography.montserratSB, fontSize = 20.sp)
         }
     }
 }

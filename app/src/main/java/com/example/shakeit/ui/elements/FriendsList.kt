@@ -73,11 +73,17 @@ private fun loadFriendsList(
                         else -> R.drawable.avatar
                     }
 
+                    // Compute the right section
+                    val section = username.firstOrNull()?.uppercase() ?: ""
+
+                    // Debug
+                    println("Loaded friend: username=$username, section=$section")
+
                     tempFriends.add(
                         Friend(
                             name = username,
                             avatarRes = friendAvatarRes,
-                            section = if (username.first().isLetter()) username.first().uppercase() else ""
+                            section = section
                         )
                     )
 
@@ -170,31 +176,33 @@ fun FriendsList(navController: NavController, authRepository: AuthRepository) {
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(30.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                        .padding(horizontal = 30.dp, vertical = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Avatar(
-                        modifier = Modifier.size(48.dp),
+                        modifier = Modifier.size(60.dp),
+                        aSize = 50,
                         avatarRes = selectedAvatar.value ?: R.drawable.avatar
                     )
 
                     Text(
                         text = "FRIENDS",
                         style = MyTypography.montserratSB,
-                        fontSize = 24.sp,
+                        fontSize = 26.sp,
                         color = Color(0xFFF9A825),
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.offset(x = (-3).dp)
+                        modifier = Modifier.offset(x = (-5).dp)
                     )
 
                     Text(
                         text = "+",
                         style = MyTypography.montserratSB,
-                        fontSize = 30.sp,
+                        fontSize = 40.sp,
                         color = Color(0xFFF9A825),
                         modifier = Modifier
                             .padding(end = 16.dp)
@@ -204,7 +212,7 @@ fun FriendsList(navController: NavController, authRepository: AuthRepository) {
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -213,11 +221,12 @@ fun FriendsList(navController: NavController, authRepository: AuthRepository) {
                     var currentSection = ""
 
                     friends.value.forEach { friend ->
-                        if (friend.section != currentSection && friend.section.isNotEmpty()) {
-                            currentSection = friend.section
+                        val friendSection = friend.section // Use the correct section
+                        if (friendSection != currentSection) {
+                            currentSection = friendSection
                             item {
                                 Text(
-                                    text = currentSection,
+                                    text = friendSection,
                                     style = MyTypography.montserratSB,
                                     fontSize = 18.sp,
                                     color = Color(0xFFF9A825),
@@ -235,10 +244,10 @@ fun FriendsList(navController: NavController, authRepository: AuthRepository) {
 
         NavBar(
             icons = listOf(
-                Pair(R.drawable.back_vector, "home"),
-                Pair(R.drawable.chart_icon, "leaderboard"),
-                Pair(R.drawable.home_icon, "home"),
-                Pair(R.drawable.chat_icon, "friends_list")
+                Pair(R.drawable.arrow_back, "home"),
+                Pair(R.drawable.ic_leaderbord, "leaderboard"),
+                Pair(R.drawable.ic_home, "home"),
+                Pair(R.drawable.ic_chat, "friends_list")
             ),
             currentScreen = currentScreen,
             onIconClick = { screenName ->
@@ -250,7 +259,8 @@ fun FriendsList(navController: NavController, authRepository: AuthRepository) {
             },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .offset(y = (-16).dp)
+                .height(47.dp)
+                .offset(y = (-70).dp)
         )
     }
 
