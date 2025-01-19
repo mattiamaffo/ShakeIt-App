@@ -52,7 +52,7 @@ fun generateRandomSequence(): List<String> {
     return List(3) { listOf("stop", "wave").random() }
 }
 @Composable
-fun ShakeTheBombScreen(navController: NavController) {
+fun ShakeTheBombScreen(navController: NavController, isTraining: Boolean) {
     val showExitDialog = remember { mutableStateOf(false) }
     val isGamePaused = remember { mutableStateOf(false) }
     val showGameOverDialog = remember { mutableStateOf(false) }
@@ -83,6 +83,26 @@ fun ShakeTheBombScreen(navController: NavController) {
 
     val shakeThreshold = 20f
     val shakeInterval = 1000L
+
+    fun handleGameOver() {
+        if (!isTraining) {
+            authRepository.updateMinigameScore(
+                gameName = "Shake The Bomb",
+                score = score.value,
+                onSuccess = {
+                    println("Shake The Bomb score updated!")
+                    navController.navigate("home")
+                },
+                onFailure = { error ->
+                    println("Error updating score: $error")
+                    navController.navigate("home")
+                }
+            )
+        } else {
+            println("Training mode - Score not saved")
+            navController.navigate("home")
+        }
+    }
 
     // Function to advance to the next symbol
     fun advanceToNextSymbol() {
@@ -411,23 +431,12 @@ fun ShakeTheBombScreen(navController: NavController) {
         }
         if (showGameOverDialog.value) {
             AlertDialog(
-                onDismissRequest = { },
-                title = { Text(text = "Game Over", style = MyTypography.montserratSB.copy(fontSize = 20.sp)) },
+                onDismissRequest = {},
+                title = { Text(text = "Game Over!", style = MyTypography.montserratSB.copy(fontSize = 20.sp)) },
                 text = { Text(text = "You've completed all rounds! Your score: ${score.value}", style = MyTypography.montserratR.copy(fontSize = 16.sp)) },
                 confirmButton = {
                     TextButton(onClick = {
-                        authRepository.updateMinigameScore(
-                            gameName = "Shake The Bomb",
-                            score = score.value,
-                            onSuccess = {
-                                println("Shake The Bomb score updated!")
-                                navController.navigate("home")
-                            },
-                            onFailure = { error ->
-                                println("Error updating score: $error")
-                                navController.navigate("home")
-                            }
-                        )
+                        handleGameOver()
                     }) {
                         Text(text = "Return to Home", style = MyTypography.montserratSB.copy(fontSize = 18.sp))
                     }

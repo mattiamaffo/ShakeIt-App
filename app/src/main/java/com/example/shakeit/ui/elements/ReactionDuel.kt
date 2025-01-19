@@ -40,7 +40,7 @@ import com.example.shakeit.ui.theme.MyTypography
 
 
 @Composable
-fun ReactionDuelScreen(navController: NavController) {
+fun ReactionDuelScreen(navController: NavController, isTraining: Boolean) {
     val backgroundColor = remember { mutableStateOf(Color.Gray) }
     val isWaitingForSignal = remember { mutableStateOf(true) }
     val startTime = remember { mutableStateOf(0L) }
@@ -64,6 +64,25 @@ fun ReactionDuelScreen(navController: NavController) {
             backgroundColor.value = Color.Gray
             startTime.value = 0L
             isWaitingForSignal.value = true
+        }
+    }
+
+    fun handleGameOver() {
+        if (!isTraining) {
+            authRepository.updateMinigameScore(
+                gameName = "Reaction Duel",
+                score = score.value,
+                onSuccess = {
+                    println("Reaction Duel score saved successfully!")
+                    navController.navigate("home")
+                },
+                onFailure = { error ->
+                    println("Error saving Reaction Duel score: $error")
+                    navController.navigate("home")
+                }
+            )
+        } else {
+            navController.navigate("home")
         }
     }
 
@@ -300,6 +319,7 @@ fun ReactionDuelScreen(navController: NavController) {
                     color = Color.White
                 )
             }
+
             // Game Over Dialog
             if (showGameOverDialog.value) {
                 AlertDialog(
@@ -307,20 +327,7 @@ fun ReactionDuelScreen(navController: NavController) {
                     title = { Text(text = "Game Over!", style = MyTypography.montserratR.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold)) },
                     text = { Text(text = "You've earned ${score.value} points!", style = MyTypography.montserratR.copy(fontSize = 13.sp)) },
                     confirmButton = {
-                        TextButton(onClick = {
-                            authRepository.updateMinigameScore(
-                                gameName = "Reaction Duel",
-                                score = score.value,
-                                onSuccess = {
-                                    println("Reaction Duel score saved successfully!")
-                                    navController.navigate("home")
-                                },
-                                onFailure = { error ->
-                                    println("Error saving Reaction Duel score: $error")
-                                    navController.navigate("home")
-                                }
-                            )
-                        }, Modifier.offset(y= 10.dp)) {
+                        TextButton(onClick = { handleGameOver() }, Modifier.offset(y = 10.dp)) {
                             Text("Back Home", fontSize = 15.sp)
                         }
                     },

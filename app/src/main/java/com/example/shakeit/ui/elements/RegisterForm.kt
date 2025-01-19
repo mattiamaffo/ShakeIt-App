@@ -1,6 +1,5 @@
 package com.example.shakeit.ui.elements
 
-import android.app.DatePickerDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,28 +9,19 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shakeit.R
 import com.example.shakeit.ui.theme.MyTypography
-import com.example.shakeit.ui.theme.Pontiac
 
-import android.content.Context
-import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.runtime.MutableState
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
-import com.example.shakeit.ui.theme.Montserrat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -150,7 +140,7 @@ fun RegisterForm(
             placeholder = { Text("Password*", style = MyTypography.montserratR.copy(fontSize = 17.sp, color = Color.Gray)) },
             leadingIcon = {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_lock),
+                    painter = painterResource(id = R.drawable.ic_lock2),
                     contentDescription = "Password Icon",
                     modifier = Modifier.size(20.dp)
                 )

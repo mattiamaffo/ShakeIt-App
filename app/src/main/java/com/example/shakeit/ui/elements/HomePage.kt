@@ -41,6 +41,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.alpha
+import androidx.core.graphics.alpha
 import com.example.shakeit.data.domain.AuthRepository
 import com.example.shakeit.ui.theme.LightBlue3
 import com.example.shakeit.ui.theme.MyTypography
@@ -179,25 +181,24 @@ fun HomePage(navController: NavController, authRepository: AuthRepository) {
                             extraTopOffset = 6,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .heightIn(min = 120.dp)
+                                .heightIn(min = 135.dp)
                                 .clickable {
                                     when (selectedGame) {
-                                        "Reaction Duel" -> navController.navigate("reactionduel")
-                                        "Shake the Bomb" -> navController.navigate("shakebomb")
-                                        "Tilt Maze Escape" -> navController.navigate("maze_escape?seed=${System.currentTimeMillis()}")
+                                        "Reaction Duel" -> navController.navigate("reactionduel?training=false")
+                                        "Shake the Bomb" -> navController.navigate("shakebomb?training=false")
+                                        "Tilt Maze Escape" -> navController.navigate("maze_escape?seed=${System.currentTimeMillis()}&training=false")
                                         else -> println("Game not implemented yet")
                                     }
                                 }
                         )
                         Block(
                             title = "Multiplayer",
-                            initialColor = LightBlue1,
-                            targetColor = LightBlue3,
+                            initialColor = Color.Gray.copy(alpha = 0.5f),
+                            targetColor = Color.Gray.copy(alpha = 0.5f),
                             iconRes = R.drawable.icon_friends,
                             extraTopOffset = 6,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 120.dp)
+                            lockIconRes = R.drawable.ic_lock2,
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 135.dp)
                         )
                     }
 
@@ -223,11 +224,15 @@ fun HomePage(navController: NavController, authRepository: AuthRepository) {
                             initialColor = LightBlue1,
                             targetColor = LightBlue3,
                             iconRes = R.drawable.icon_practice,
-                            fontSize = 14,
-                            extraTopOffset = 10,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(90.dp)
+                            extraTopOffset = 6,
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp).clickable {
+                                when (selectedGame) {
+                                    "Reaction Duel" -> navController.navigate("reactionduel?training=true")
+                                    "Shake the Bomb" -> navController.navigate("shakebomb?training=true")
+                                    "Tilt Maze Escape" -> navController.navigate("maze_escape?seed=${System.currentTimeMillis()}&training=true")
+                                    else -> println("Game not implemented yet")
+                                }
+                            }
                         )
                         PlayBlock(
                             title = "PLAY",
@@ -394,7 +399,8 @@ fun Block(
     extraBottomOffset: Int = 0,
     extraTopOffset: Int = 0,
     fontSize: Int = 17,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    lockIconRes: Int? = null
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val animatedColor by infiniteTransition.animateColor(
@@ -435,6 +441,18 @@ fun Block(
                     .align(Alignment.BottomEnd)
                     .size(iconSize.dp)
                     .offset(y = extraBottomOffset.dp)
+                    .alpha(if (lockIconRes != null) 0.5f else 1f)
+            )
+        }
+
+        if (lockIconRes != null) {
+            Image(
+                painter = painterResource(id = lockIconRes),
+                contentDescription = "Lock Icon",
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .size(30.dp)
+                    .offset(x = 8.dp, y = (-8).dp)
             )
         }
     }

@@ -110,7 +110,7 @@ fun moveBall(
 
 
 @Composable
-fun MazeEscapeScreen(navController: NavController, seed: Long = System.currentTimeMillis()) {
+fun MazeEscapeScreen(navController: NavController, seed: Long = System.currentTimeMillis(), isTraining: Boolean) {
     val context = LocalContext.current
     val sensorManager = remember { context.getSystemService(Context.SENSOR_SERVICE) as SensorManager }
     val accelerometer = remember { sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
@@ -128,6 +128,26 @@ fun MazeEscapeScreen(navController: NavController, seed: Long = System.currentTi
 
     val debounceTime = 200L // Delay in milliseconds
     var lastMoveTime by remember { mutableStateOf(0L) }
+
+    fun handleGameOver() {
+        if (!isTraining) {
+            authRepository.updateMinigameScore(
+                gameName = "Maze Escape",
+                score = score.value,
+                onSuccess = {
+                    println("Maze Escape score updated successfully!")
+                    navController.popBackStack()
+                },
+                onFailure = { error ->
+                    println("Error updating score: $error")
+                    navController.popBackStack()
+                }
+            )
+        } else {
+            println("Training mode - Score not saved")
+            navController.popBackStack()
+        }
+    }
 
     DisposableEffect(Unit) {
         val listener = object : SensorEventListener {
@@ -351,26 +371,16 @@ fun MazeEscapeScreen(navController: NavController, seed: Long = System.currentTi
 
             if (showDialog.value) {
                 AlertDialog(
-                    onDismissRequest = {  },
+                    onDismissRequest = {},
                     title = { Text("Game Over", style = MyTypography.montserratSB) },
                     text = {
-                        Text("Your score: ${score.value}\nRemaining Time Bonus: ${remainingTime.value * 2}", style = MyTypography.montserratSBi)
+                        Text(
+                            "Your score: ${score.value}\nRemaining Time Bonus: ${remainingTime.value * 2}",
+                            style = MyTypography.montserratSBi
+                        )
                     },
                     confirmButton = {
-                        Button(onClick = {
-                            authRepository.updateMinigameScore(
-                                gameName = "Maze Escape",
-                                score = score.value,
-                                onSuccess = {
-                                    println("Maze Escape score updated!")
-                                    navController.popBackStack() // Go back to the home screen
-                                },
-                                onFailure = { error ->
-                                    println("Error updating score: $error")
-                                    navController.popBackStack()
-                                }
-                            )
-                        }) {
+                        Button(onClick = { handleGameOver() }) {
                             Text("Return to Home", style = MyTypography.montserratR)
                         }
                     }

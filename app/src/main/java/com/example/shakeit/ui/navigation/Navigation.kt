@@ -36,25 +36,21 @@ fun AppNavigation(navController: NavHostController) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.route) {
                 "login", "home", "register", "settings", "games", "qr_generation", "leaderboard", "friends_list" -> {
-                    // Reproduce the main theme
                     if (!soundManager.isPlaying(R.raw.menu_sound)) {
                         soundManager.playSound(R.raw.menu_sound)
                     }
                 }
-                "reactionduel" -> {
-                    // Reproduce reaction duel theme
+                "reactionduel?training={training}" -> {
                     if (!soundManager.isPlaying(R.raw.reaction_sound)) {
                         soundManager.playSound(R.raw.reaction_sound)
                     }
                 }
-                "maze_escape" -> {
-                    // Reproduce maze escape theme
+                "maze_escape?seed={seed}&training={training}" -> {
                     if (!soundManager.isPlaying(R.raw.maze_escape_sound)) {
                         soundManager.playSound(R.raw.maze_escape_sound)
                     }
                 }
-                "shakebomb" -> {
-                    // Reproduce shake bomb theme
+                "shakebomb?training={training}" -> {
                     val startMs = 0
                     val endMs = 3 * 60 * 1000 + 20 * 1000
                     if (!soundManager.isPlaying(R.raw.shake_sound)) {
@@ -102,18 +98,30 @@ fun AppNavigation(navController: NavHostController) {
         composable("qr_scanner") {
             QrScannerScreen(navController = navController)
         }
-        composable("reactionduel") {
-            ReactionDuelScreen(navController = navController)
-        }
-        composable("shakebomb") {
-            ShakeTheBombScreen(navController = navController)
+        composable(
+            "reactionduel?training={training}",
+            arguments = listOf(navArgument("training") { type = NavType.BoolType })
+        ) { backStackEntry ->
+            val isTraining = backStackEntry.arguments?.getBoolean("training") ?: false
+            ReactionDuelScreen(navController = navController, isTraining = isTraining)
         }
         composable(
-            "maze_escape?seed={seed}",
-            arguments = listOf(navArgument("seed") { type = NavType.LongType })
+            "shakebomb?training={training}",
+            arguments = listOf(navArgument("training") { type = NavType.BoolType })
+        ) { backStackEntry ->
+            val isTraining = backStackEntry.arguments?.getBoolean("training") ?: false
+            ShakeTheBombScreen(navController = navController, isTraining = isTraining)
+        }
+        composable(
+            "maze_escape?seed={seed}&training={training}",
+            arguments = listOf(
+                navArgument("seed") { type = NavType.LongType },
+                navArgument("training") { type = NavType.BoolType }
+            )
         ) { backStackEntry ->
             val seed = backStackEntry.arguments?.getLong("seed") ?: System.currentTimeMillis()
-            MazeEscapeScreen(navController = navController, seed = seed)
+            val isTraining = backStackEntry.arguments?.getBoolean("training") ?: false
+            MazeEscapeScreen(navController = navController, seed = seed, isTraining = isTraining)
         }
     }
 }
