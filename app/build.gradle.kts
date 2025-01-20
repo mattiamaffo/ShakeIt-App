@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.material.icons)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.zxing.embedded)
+    implementation(libs.opencv)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
