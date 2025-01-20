@@ -60,32 +60,39 @@ private fun loadFriendsList(
     authRepository.getFriends(
         userId = userId,
         onSuccess = { friendsList ->
+            if (friendsList.isEmpty()) {
+                friends.value = emptyList()
+                isLoading.value = false
+                return@getFriends
+            }
+
             val tempFriends = mutableListOf<Friend>()
 
             friendsList.forEach { friendId ->
                 authRepository.getUserData(friendId) { friendData ->
-                    val username = friendData?.get("username") as? String ?: "Unknown"
-                    val friendAvatarName = friendData?.get("avatar") as? String
-                    val friendAvatarRes = when (friendAvatarName) {
-                        "avatar" -> R.drawable.avatar
-                        "avatar2" -> R.drawable.avatar2
-                        "avatar3" -> R.drawable.avatar3
-                        else -> R.drawable.avatar
-                    }
+                    if (friendData != null && friendData.containsKey("username")) {
+                        val username = friendData["username"] as? String ?: "Unknown"
+                        val friendAvatarName = friendData["avatar"] as? String
 
-                    // Compute the right section
-                    val section = username.firstOrNull()?.uppercase() ?: ""
+                        val friendAvatarRes = when (friendAvatarName) {
+                            "avatar" -> R.drawable.avatar
+                            "avatar2" -> R.drawable.avatar2
+                            "avatar3" -> R.drawable.avatar3
+                            else -> R.drawable.avatar
+                        }
 
-                    // Debug
-                    println("Loaded friend: username=$username, section=$section")
+                        val section = username.firstOrNull()?.uppercase() ?: ""
 
-                    tempFriends.add(
-                        Friend(
-                            name = username,
-                            avatarRes = friendAvatarRes,
-                            section = section
+                        tempFriends.add(
+                            Friend(
+                                name = username,
+                                avatarRes = friendAvatarRes,
+                                section = section
+                            )
                         )
-                    )
+                    } else {
+                        println("Error: No username found for user ID $friendId")
+                    }
 
                     if (tempFriends.size == friendsList.size) {
                         val sortedFriends = tempFriends.sortedBy { it.name }
@@ -94,11 +101,6 @@ private fun loadFriendsList(
                     }
                 }
             }
-
-            if (friendsList.isEmpty()) {
-                friends.value = emptyList()
-                isLoading.value = false
-            }
         },
         onFailure = { error ->
             println("Error fetching friends: $error")
@@ -106,6 +108,7 @@ private fun loadFriendsList(
         }
     )
 }
+
 
 private fun addNewFriend(
     authRepository: AuthRepository,

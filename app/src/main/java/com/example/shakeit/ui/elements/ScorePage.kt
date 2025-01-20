@@ -113,8 +113,10 @@ fun ScorePage(navController: NavController, authRepository: AuthRepository) {
 
                 Spacer(modifier = Modifier.height(25.dp))
 
-                // Top 3
-                val topPlayers = miniGameData.value.firstOrNull()?.scores?.take(3) ?: emptyList()
+                // Top 3 players based on current page
+                val currentGameData = miniGameData.value.getOrNull(pagerState.currentPage)
+                val topPlayers = currentGameData?.scores?.take(3) ?: emptyList()
+
                 // Order top players by score
                 val topPlayersReordered = listOfNotNull(
                     topPlayers.getOrNull(1),
@@ -144,6 +146,7 @@ fun ScorePage(navController: NavController, authRepository: AuthRepository) {
                         )
                     }
                 }
+
 
                 // Divider
                 Divider(
