@@ -33,8 +33,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -315,6 +319,29 @@ fun HomePage(navController: NavController, authRepository: AuthRepository) {
                     isAvatarDialogOpen.value = false
                 }
             )
+        }
+
+        FloatingActionButton(
+            onClick = { navController.navigate("cameraScreen") },
+            containerColor = Purple1,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .offset(y = 45.dp, x = 15.dp)
+                .padding(end = 16.dp, bottom = 16.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Have fun!",
+                    style = MyTypography.montserratSB.copy(fontSize = 15.sp),
+                    color = Color.White,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Icon(Icons.Default.CameraAlt, contentDescription = "Open Camera", tint = Color.White)
+            }
         }
     }
 }
