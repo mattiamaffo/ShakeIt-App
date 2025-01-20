@@ -1,5 +1,6 @@
 package com.example.shakeit.ui.navigation
 
+import CameraScreen
 import QrScannerScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -97,6 +98,9 @@ fun AppNavigation(navController: NavHostController) {
         }
         composable("qr_scanner") {
             QrScannerScreen(navController = navController)
+        }
+        composable("cameraScreen") {
+            CameraScreen(navController = navController)
         }
         composable(
             "reactionduel?training={training}",
